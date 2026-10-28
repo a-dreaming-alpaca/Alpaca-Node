@@ -4,6 +4,15 @@
   const model = { online: false, data: null, fps: 15, paused: false, ambient: true, motion: true, loadBand: '' };
   const endpoint = 'http://127.0.0.1:8765/metrics';
   const clockText = date => date.toLocaleTimeString('en-GB', { hour12: false });
+  const themeStyle=getComputedStyle(document.documentElement);
+  const themeColor=(name,fallback)=>themeStyle.getPropertyValue(name).trim()||fallback;
+  const palette={
+    role:themeColor('--purple','#BBA0FF'),
+    face:themeColor('--hero','#F3F1F7'),
+    scan:themeColor('--mint','#9BE9C2'),
+    muted:themeColor('--muted','#A0A6B0'),
+    warning:themeColor('--warning','#FF9388')
+  };
   const reporter = new window.AlpacaReports();
   const reports=[];
   let speakingUntil=0;
@@ -201,61 +210,69 @@
     const ctx = canvas.getContext('2d'); ctx.setTransform(w / rect.width, 0, 0, h / rect.height, 0, 0); return [ctx, rect.width, rect.height, resized];
   }
 
-  // Build the silhouette locally: no raster assets or downloaded fonts needed.
-  const mask = document.createElement('canvas'); mask.width = 480; mask.height = 540;
-  const mc = mask.getContext('2d');
-  function ellipse(x, y, rx, ry, color, rotation = 0) { mc.fillStyle = color; mc.beginPath(); mc.ellipse(x, y, rx, ry, rotation, 0, Math.PI * 2); mc.fill(); }
-  function polygon(points, color) { mc.fillStyle = color; mc.beginPath(); points.forEach(([x,y],i) => i ? mc.lineTo(x,y) : mc.moveTo(x,y)); mc.closePath(); mc.fill(); }
-  // Front-facing bust inspired by the reference: upright ears, scalloped fleece,
-  // wide-set eyes and a separate oval muzzle. Every visible mark is a character.
-  ellipse(151,94,29,77,'#dce8cc',-.09); ellipse(329,94,29,77,'#dce8cc',.09);
-  ellipse(151,95,14,55,'#293e2b',-.09); ellipse(329,95,14,55,'#293e2b',.09);
-  mc.fillStyle='#cbdcb9'; mc.beginPath(); mc.moveTo(105,495);
-  mc.bezierCurveTo(83,457,96,413,111,391);
-  mc.bezierCurveTo(77,352,87,306,105,288);
-  mc.bezierCurveTo(66,242,86,165,137,154);
-  mc.bezierCurveTo(155,147,170,149,178,149);
-  mc.bezierCurveTo(205,94,275,94,302,149);
-  mc.bezierCurveTo(310,149,325,147,343,154);
-  mc.bezierCurveTo(394,165,414,242,375,288);
-  mc.bezierCurveTo(393,306,403,352,369,391);
-  mc.bezierCurveTo(384,413,397,457,375,495);
-  mc.quadraticCurveTo(240,524,105,495); mc.closePath(); mc.fill();
-  mc.strokeStyle='#eef6dc'; mc.lineWidth=8; mc.stroke();
-  // Gentle chest shading keeps the face dominant without a solid bright block.
-  ellipse(240,427,112,65,'#b7c8a4');
-  ellipse(240,277,68,49,'#ecf4d7');
-  ellipse(240,277,57,39,'#3c5136');
-  ellipse(240,275,50,31,'#74866a');
-  const pixels = mc.getImageData(0,0,480,540).data;
-  const points = [];
-  for (let y = 8; y < 524; y += 6) for (let x = 66; x < 416; x += 4) { const i = (y * 480 + x) * 4; if (pixels[i+3] > 100) points.push({x,y,v:pixels[i]/255,seed:Math.sin(x*127.1+y*311.7)*43758.5453 % 1}); }
-  const isEye = p => { const dx=p.x-(p.x<240?160:320),dy=p.y-224;return dx*dx/(24*24)+dy*dy/(27*27)<1; };
-  const isMouth = p => Math.abs(p.x-240)<33 && p.y>251 && p.y<301;
-  const eyePoints=points.filter(isEye), scanPoints=points.filter(p=>!isEye(p)&&!isMouth(p));
+  // Reuse the standalone outline study. Only strokes become body glyphs;
+  // the ears, cheeks, muzzle interior and chest stay transparent.
+  const alpacaWidth=420,alpacaHeight=560;
+  function characterMask(){
+    const canvas=document.createElement('canvas');canvas.width=alpacaWidth;canvas.height=alpacaHeight;
+    const ctx=canvas.getContext('2d');
+    ctx.strokeStyle=ctx.fillStyle='#fff';ctx.lineCap='round';ctx.lineJoin='round';
+    return ctx;
+  }
+  function characterPoints(ctx){
+    const pixels=ctx.getImageData(0,0,alpacaWidth,alpacaHeight).data,result=[];
+    for(let y=9;y<alpacaHeight-4;y+=6)for(let x=9;x<alpacaWidth-4;x+=5){
+      const alpha=pixels[(y*alpacaWidth+x)*4+3]/255;
+      if(alpha>.3)result.push({x,y,alpha,bit:((x*17+y*31)>>>0)%7<3?'0':'1'});
+    }
+    return result;
+  }
+  const outline=characterMask(),muzzle=characterMask(),nose=characterMask();
+  outline.lineWidth=13;outline.beginPath();
+  outline.moveTo(110,180);outline.bezierCurveTo(99,142,102,47,127,43);outline.bezierCurveTo(157,39,165,113,155,154);
+  outline.moveTo(310,180);outline.bezierCurveTo(321,142,318,47,293,43);outline.bezierCurveTo(263,39,255,113,265,154);outline.stroke();
+  outline.lineWidth=14;outline.beginPath();outline.moveTo(116,176);
+  outline.bezierCurveTo(138,179,144,158,154,145);outline.bezierCurveTo(179,111,241,111,266,145);outline.bezierCurveTo(276,158,282,179,304,176);
+  outline.bezierCurveTo(354,164,379,212,367,257);outline.bezierCurveTo(364,271,356,282,348,291);outline.bezierCurveTo(342,298,344,305,350,315);
+  outline.bezierCurveTo(372,347,369,387,351,410);outline.bezierCurveTo(343,421,343,428,349,440);outline.bezierCurveTo(361,467,361,500,350,520);
+  outline.bezierCurveTo(298,543,122,543,70,520);outline.bezierCurveTo(59,500,59,467,71,440);outline.bezierCurveTo(77,428,77,421,69,410);
+  outline.bezierCurveTo(51,387,48,347,70,315);outline.bezierCurveTo(76,305,78,298,72,291);outline.bezierCurveTo(64,282,56,271,53,257);
+  outline.bezierCurveTo(41,212,66,164,116,176);outline.closePath();outline.stroke();
+  muzzle.lineWidth=9;muzzle.beginPath();muzzle.ellipse(210,293,61,43,0,0,Math.PI*2);muzzle.stroke();
+  nose.lineWidth=8;nose.beginPath();nose.moveTo(202,284);nose.lineTo(210,291);nose.lineTo(218,284);nose.moveTo(210,291);nose.lineTo(210,302);nose.stroke();
+  const bodyLayers=[{points:characterPoints(outline),color:palette.role},{points:characterPoints(muzzle),color:palette.role},{points:characterPoints(nose),color:palette.face}];
+  const scanPoints=[...bodyLayers[0].points,...bodyLayers[1].points].sort((a,b)=>a.y-b.y||a.x-b.x);
+  for(const mask of [outline,muzzle,nose])mask.canvas.width=mask.canvas.height=1;
+  // Cache small eye templates once; each frame only changes their position/state.
+  const eyeStates={};
+  for(const state of ['GRAZING','WATCHFUL','BUSY','CLOSED']){
+    const eyes=characterMask();
+    for(const x of [130,290]){
+      eyes.beginPath();
+      if(state==='CLOSED'){
+        eyes.lineWidth=5.5;eyes.moveTo(x-12,251);eyes.quadraticCurveTo(x,256,x+12,251);eyes.stroke();
+      }else{
+        eyes.ellipse(x,251,12,state==='WATCHFUL'?16:14,0,0,Math.PI*2);eyes.fill();
+      }
+    }
+    eyeStates[state]=characterPoints(eyes).filter(p=>state!=='BUSY'||p.y-251>=-6+(p.x<210?p.x-130:290-p.x)*.35);
+    eyes.canvas.width=eyes.canvas.height=1;
+  }
   const alpacaBase=document.createElement('canvas');
   let alpacaBaseKey='', staticAlpacaKey='';
-  function paintAlpacaBase(w,h,bitmapWidth,bitmapHeight,busy){
+  function paintAlpacaBase(w,h,bitmapWidth,bitmapHeight){
     alpacaBase.width=bitmapWidth;alpacaBase.height=bitmapHeight;
     const ctx=alpacaBase.getContext('2d');ctx.setTransform(bitmapWidth/w,0,0,bitmapHeight/h,0,0);
-    const scale=Math.min(w/480,h/540)*.94,ox=(w-480*scale)/2,oy=(h-540*scale)/2;
-    ctx.font=`${6.8*scale}px Consolas,monospace`;ctx.textAlign='center';
-    const ramp='.:==+*#%@';
-    for(const p of points){
-      if(isEye(p))continue;
-      let intensity=p.v*(.70+.30*Math.sin(p.x*.19+p.y*.24)**2);
-      let ch=ramp[Math.min(8,Math.floor(intensity*8))];
-      if(isMouth(p)){
-        const mx=p.x-240,my=p.y-266;
-        const nose=my>=-7&&my<8&&Math.abs(mx)<(10-my*.55);
-        const stem=Math.abs(mx)<2.5&&my>=5&&my<20;
-        const smile=busy?Math.abs(my-24)<2&&Math.abs(mx)<16:Math.abs(my-(20+6*Math.sin(Math.abs(mx)/22*Math.PI)))<2.8&&Math.abs(mx)<24;
-        if(nose||stem||smile){ch=nose?'@':smile?'=':'|';intensity=1;}else{ch='.';intensity=.25;}
+    const scale=Math.min(w/alpacaWidth,h/alpacaHeight)*.94,ox=(w-alpacaWidth*scale)/2,oy=(h-alpacaHeight*scale)/2;
+    ctx.font=`${8*scale}px Consolas,monospace`;ctx.textAlign='center';ctx.textBaseline='middle';
+    for(const layer of bodyLayers){
+      ctx.fillStyle=layer.color;
+      for(const p of layer.points){
+        ctx.globalAlpha=.7+.3*p.alpha;
+        ctx.fillText(p.bit,ox+p.x*scale,oy+p.y*scale);
       }
-      const alpha=.42+intensity*.5;
-      ctx.fillStyle=`rgba(${Math.floor(130+intensity*55)},${Math.floor(173+intensity*59)},${Math.floor(114+intensity*51)},${alpha})`;
-      ctx.fillText(ch,ox+p.x*scale,oy+p.y*scale);
     }
+    ctx.globalAlpha=1;
   }
   function drawAlpaca(t) {
     const canvas=$('alpaca'),[ctx,w,h,resized]=canvasSize(canvas);
@@ -264,36 +281,28 @@
     staticAlpacaKey=model.motion?'':staticKey;
     const busy=model.online&&model.loadBand==='BUSY',watchful=model.online&&model.loadBand==='WATCHFUL';
     const baseKey=`${canvas.width}:${canvas.height}:${staticKey}`;
-    if(baseKey!==alpacaBaseKey){paintAlpacaBase(w,h,canvas.width,canvas.height,busy);alpacaBaseKey=baseKey;}
+    if(baseKey!==alpacaBaseKey){paintAlpacaBase(w,h,canvas.width,canvas.height);alpacaBaseKey=baseKey;}
     ctx.clearRect(0,0,w,h);
-    const scale=Math.min(w/480,h/540)*.94,ox=(w-480*scale)/2,oy=(h-540*scale)/2;
+    const scale=Math.min(w/alpacaWidth,h/alpacaHeight)*.94,ox=(w-alpacaWidth*scale)/2,oy=(h-alpacaHeight*scale)/2;
     const seconds=model.motion?t/1000:0;
     const sway=model.motion?Math.sin(seconds*.6)*1.3:0,breathe=model.motion?Math.sin(seconds*1.25)*1.8:0;
-    const scan=(seconds*30)%650-50,blink=model.motion&&(seconds%6.7>6.5);
-    const gaze=model.online&&model.motion?(Date.now()<speakingUntil?7:Math.sin(seconds*.55)*(watchful?8:4)):0;
+    const scan=(seconds*30)%(alpacaHeight+100)-50,blink=model.motion&&(seconds%6.7>6.5);
+    const gaze=model.online&&model.motion?(Date.now()<speakingUntil?7:Math.sin(seconds*.55)*(watchful?4:2.5)):0;
     ctx.save();ctx.translate(sway*scale,breathe*scale);ctx.drawImage(alpacaBase,0,0,w,h);
-    ctx.font=`${6.8*scale}px Consolas,monospace`;ctx.textAlign='center';
-    for(const p of eyePoints){
-      const dx=p.x-(p.x<240?160:320),dy=p.y-224;
-      let ch,intensity;
-      if(blink||!model.online){if(Math.abs(dy-dx*dx/100)>3)continue;ch='=';intensity=.95;}
-      else{
-        const lid=busy?-6+(p.x<240?dx:-dx)*.35:watchful?-21:-15;
-        if(dy<lid){if(dy<lid-5)continue;ch='_';intensity=.8;}
-        else if((dx-gaze)**2/64+dy*dy/(watchful?225:144)<1){ch=Math.abs(dx-gaze)<4&&dy<-2?'@':'#';intensity=1;}
-        else if(dx*dx/(22*22)+dy*dy/(25*25)>.80){ch='.';intensity=.45;}
-        else continue;
-      }
-      const alpha=.42+intensity*.5;
-      ctx.fillStyle=busy?'#ddbf77':`rgba(${Math.floor(130+intensity*55)},${Math.floor(173+intensity*59)},${Math.floor(114+intensity*51)},${alpha})`;
-      ctx.fillText(ch,ox+p.x*scale,oy+p.y*scale);
+    ctx.font=`${8*scale}px Consolas,monospace`;ctx.textAlign='center';ctx.textBaseline='middle';
+    const eyeState=blink||!model.online?'CLOSED':busy?'BUSY':watchful?'WATCHFUL':'GRAZING';
+    ctx.fillStyle=busy?palette.warning:palette.face;
+    for(const p of eyeStates[eyeState]){
+      ctx.globalAlpha=.7+.3*p.alpha;
+      ctx.fillText(eyeState==='CLOSED'?'=':p.bit,ox+(p.x+gaze)*scale,oy+p.y*scale);
     }
+    ctx.globalAlpha=1;
     if(model.online&&model.motion){
       let low=0,high=scanPoints.length;
       while(low<high){const mid=(low+high)>>1;if(scanPoints[mid].y<scan-6)low=mid+1;else high=mid;}
-      ctx.fillStyle='#dbffbb';
+      ctx.fillStyle=palette.scan;
       for(let i=low;i<scanPoints.length&&scanPoints[i].y<scan+6;i++){
-        const p=scanPoints[i],ch='0123456789ABCDEF'[Math.abs(Math.floor(p.seed*100))%16];
+        const p=scanPoints[i],ch=p.bit==='0'?'1':'0';
         ctx.fillText(ch,ox+p.x*scale,oy+p.y*scale);
       }
     }
@@ -312,9 +321,10 @@
     if(frame===ambientFrame && !resized && ambientEnabled===model.ambient)return;
     ambientFrame=frame;ambientEnabled=model.ambient;
     ctx.clearRect(0,0,w,h);if(!model.ambient)return;
-    ctx.font='9px Consolas,monospace';ctx.fillStyle='rgba(105,155,99,0.055)';
+    ctx.font='9px Consolas,monospace';ctx.fillStyle=palette.muted;ctx.globalAlpha=.055;
     const chars='01.:+    /   []  10   :';
     for(let y=14;y<h;y+=28)for(let x=7;x<w;x+=21){const n=Math.abs(Math.floor(Math.sin(x*3.7+y*.29+frame*.01)*10000));ctx.fillText(chars[n%chars.length],x,y);}
+    ctx.globalAlpha=1;
   }
   let lastFrame=0; function animate(t){requestAnimationFrame(animate);if(model.paused||t-lastFrame<1000/model.fps)return;lastFrame=t;drawAlpaca(t);drawAmbient(t);}
   window.wallpaperPropertyListener = {

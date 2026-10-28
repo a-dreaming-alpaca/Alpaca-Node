@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Alpaca · 留白轮廓形象</title>
+  <style>
+    :root{color-scheme:dark;--bg:#060b09;--text:#b5dfa4;--muted:#75916e;--line:#263b2b;--surface:#102017}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Consolas,"Cascadia Mono",monospace;transition:background .2s,color .2s}
+    body.light{color-scheme:light;--bg:#f3faf4;--text:#194e25;--muted:#65816a;--line:#c8dccb;--surface:#e6f2e8}
+    main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:14px}
+    h1{font-size:13px;font-weight:400;letter-spacing:3px;margin:0}
+    .frame{height:min(72vh,760px);aspect-ratio:420/560;max-width:90vw}
+    canvas{display:block;width:100%;height:100%}
+    .controls{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px}
+    button{border:1px solid var(--line);border-radius:3px;background:transparent;color:var(--muted);font:12px Consolas,monospace;padding:7px 12px;cursor:pointer}
+    button:hover,button[aria-pressed="true"]{background:var(--surface);color:var(--text);border-color:var(--muted)}
+    button:focus-visible{outline:2px solid var(--text);outline-offset:3px}
+    p{margin:0;font-size:11px;line-height:1.6;color:var(--muted);text-align:center}
+    @media(max-height:650px){main{gap:10px;padding:14px}.frame{height:68vh}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>ALPACA / OUTLINE STUDY</h1>
+  <div class="frame"><canvas id="character" role="img" aria-label="正脸 ASCII 羊驼：长耳朵、圆眼睛、椭圆口鼻，脸部和身体留白"></canvas></div>
+  <div class="controls" aria-label="形象预览选项">
+    <button id="binary" aria-pressed="true">0 / 1</button>
+    <button id="symbols" aria-pressed="false">ASCII 符号</button>
+    <button id="background" aria-pressed="false">浅色对照</button>
+    <button id="export">保存 PNG</button>
+  </div>
+  <p>独立形象预览 · 轮廓描边，脸颊和身体保持留白</p>
+</main>
+<script>
+(() => {
+  'use strict';
+  const W=420,H=560,canvas=document.getElementById('character');
+  let alphabet='binary',light=false;
+
+  // Separate masks keep the silhouette, muzzle, and facial features distinct.
+  function mask(){const c=document.createElement('canvas');c.width=W;c.height=H;return c;}
+  const outline=mask(),muzzle=mask(),features=mask();
+  const oc=outline.getContext('2d'),mc=muzzle.getContext('2d'),fc=features.getContext('2d');
+  for(const ctx of [oc,mc,fc]){ctx.strokeStyle=ctx.fillStyle='#fff';ctx.lineCap='round';ctx.lineJoin='round';}
+
+  // Upright ears join the crown; their interiors remain empty.
+  oc.lineWidth=13;
+  oc.beginPath();
+  oc.moveTo(110,180);oc.bezierCurveTo(99,142,102,47,127,43);oc.bezierCurveTo(157,39,165,113,155,154);
+  oc.moveTo(310,180);oc.bezierCurveTo(321,142,318,47,293,43);oc.bezierCurveTo(263,39,255,113,265,154);
+  oc.stroke();
+
+  // Broad cheeks and three restrained fleece lobes. No texture fills the face or chest.
+  oc.lineWidth=14;
+  oc.beginPath();oc.moveTo(116,176);
+  oc.bezierCurveTo(138,179,144,158,154,145);
+  oc.bezierCurveTo(179,111,241,111,266,145);
+  oc.bezierCurveTo(276,158,282,179,304,176);
+  oc.bezierCurveTo(354,164,379,212,367,257);
+  oc.bezierCurveTo(364,271,356,282,348,291);
+  oc.bezierCurveTo(342,298,344,305,350,315);
+  oc.bezierCurveTo(372,347,369,387,351,410);
+  oc.bezierCurveTo(343,421,343,428,349,440);
+  oc.bezierCurveTo(361,467,361,500,350,520);
+  oc.bezierCurveTo(298,543,122,543,70,520);
+  oc.bezierCurveTo(59,500,59,467,71,440);
+  oc.bezierCurveTo(77,428,77,421,69,410);
+  oc.bezierCurveTo(51,387,48,347,70,315);
+  oc.bezierCurveTo(76,305,78,298,72,291);
+  oc.bezierCurveTo(64,282,56,271,53,257);
+  oc.bezierCurveTo(41,212,66,164,116,176);
+  oc.closePath();oc.stroke();
+
+  mc.lineWidth=9;
+  mc.beginPath();mc.ellipse(210,293,61,43,0,0,Math.PI*2);mc.stroke();
+
+  // Clear, widely spaced eyes and a small Y-shaped nose, rather than dense facial shading.
+  fc.beginPath();fc.ellipse(130,251,12,14,0,0,Math.PI*2);fc.ellipse(290,251,12,14,0,0,Math.PI*2);fc.fill();
+  fc.lineWidth=8;
+  fc.beginPath();fc.moveTo(202,284);fc.lineTo(210,291);fc.lineTo(218,284);fc.moveTo(210,291);fc.lineTo(210,302);fc.stroke();
+
+  function points(source){
+    const data=source.getContext('2d').getImageData(0,0,W,H).data,result=[];
+    for(let y=9;y<H-4;y+=6)for(let x=9;x<W-4;x+=5){
+      const alpha=data[(y*W+x)*4+3]/255;
+      if(alpha>.3)result.push({x,y,alpha,bit:((x*17+y*31)>>>0)%7<3?'0':'1'});
+    }
+    return result;
+  }
+  const layers=[{points:points(outline),type:'outline'},{points:points(muzzle),type:'muzzle'},{points:points(features),type:'features'}];
+  function paint(ctx,width,height){
+    ctx.fillStyle=light?'#f3faf4':'#060b09';ctx.fillRect(0,0,width,height);
+    const scale=Math.min(width/W,height/H),dx=(width-W*scale)/2,dy=(height-H*scale)/2;
+    ctx.save();ctx.translate(dx,dy);ctx.scale(scale,scale);
+    ctx.font='8px Consolas,"Cascadia Mono",monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    for(const layer of layers){
+      ctx.fillStyle=light?(layer.type==='features'?'#143c20':'#285b32'):(layer.type==='features'?'#d1ffb8':layer.type==='muzzle'?'#b1e994':'#98cd83');
+      for(const p of layer.points){
+        ctx.globalAlpha=.7+.3*p.alpha;
+        const ch=alphabet==='binary'?p.bit:layer.type==='features'?'@':layer.type==='muzzle'?'o':['+','*','#'][Math.floor((p.x+p.y)/5)%3];
+        ctx.fillText(ch,p.x,p.y);
+      }
+    }
+    ctx.restore();ctx.globalAlpha=1;
+  }
+  function draw(){
+    const rect=canvas.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);
+    canvas.width=Math.max(1,Math.round(rect.width*dpr));canvas.height=Math.max(1,Math.round(rect.height*dpr));
+    paint(canvas.getContext('2d'),canvas.width,canvas.height);
+  }
+  function choose(value){
+    alphabet=value;
+    document.getElementById('binary').setAttribute('aria-pressed',String(value==='binary'));
+    document.getElementById('symbols').setAttribute('aria-pressed',String(value==='symbols'));
+    draw();
+  }
+  document.getElementById('binary').onclick=()=>choose('binary');
+  document.getElementById('symbols').onclick=()=>choose('symbols');
+  document.getElementById('background').onclick=()=>{
+    light=!light;document.body.classList.toggle('light',light);
+    document.getElementById('background').setAttribute('aria-pressed',String(light));
+    document.getElementById('background').textContent=light?'深色预览':'浅色对照';draw();
+  };
+  document.getElementById('export').onclick=()=>{
+    const output=document.createElement('canvas');output.width=1260;output.height=1680;paint(output.getContext('2d'),output.width,output.height);
+    const link=document.createElement('a');link.download=`alpaca-outline-${alphabet}-${light?'light':'dark'}.png`;link.href=output.toDataURL('image/png');link.click();
+  };
+  new ResizeObserver(draw).observe(canvas);document.fonts.ready.then(draw);draw();
+})();
+</script>
+</body>
+</html>

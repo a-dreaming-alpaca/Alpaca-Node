@@ -1,60 +1,111 @@
-# Alpaca Node
+# ALPACA NODE / 薄荷主导
 
-用于 Wallpaper Engine 的黑绿 ASCII 羊驼系统监控壁纸。羊驼会根据电脑负载改变状态、汇报系统事件，并在空闲时分享格言和短句。
+石墨底、兰紫羊驼、薄荷读数的电脑监控壁纸，适配 Wallpaper Engine 的 Web 网页壁纸。
 
-## 功能
+仓库：<https://github.com/a-dreaming-alpaca/Alpaca-Node>。源码已从原来的 `Alpaca-Node-v12/` 子目录归并到仓库根目录；克隆后直接运行根目录 `Start-Alpaca.cmd`，导入 `wallpaper/index.html`。安装目录保持可写，保留文件间的相对位置。
 
-- CPU、物理内存、磁盘读写、网络速率及进程占用排行。
-- 自动适配显卡：优先 NVIDIA SMI；不可用时使用 Windows WDDM 计数器，支持 AMD / Intel / NVIDIA。
-- 分别显示专用 GPU 内存和共享系统内存，避免混淆核显的内存口径。
-- 专用 GPU 内存占用不触发羊驼提醒，也不会因此推迟闲聊。
-- 安静约 3 分钟后开始闲聊，之后随机间隔 3～6 分钟；70% 概率使用内置格言，30% 使用羊驼短句。状态汇报或高负载会延后闲聊。
-- 本地采集、本地显示，无云端 AI 接口或数据上传；网页动画上限 15 FPS。
+## 本版变化
 
-## 快速使用
+- 当前源码采用原「薄荷主导」方案：底色 #0D0F12，角色 #BBA0FF，读数及排行标题 #9BE9C2，最新汇报 #D7F6E7，标签 #A0A6B0，进程名称 #DDDFE7；异常为 #FF9388。没有采用白色读数、薄荷色进程名称的对照方案。
+- 三栏按 31 / 33 / 36 的比例分配，统一间距，底部进程排行形成紧凑的数据带。
+- 羊驼采用后来设计的正脸留白轮廓：用 0 / 1 字符勾出长耳朵、外轮廓、椭圆口鼻和 Y 形鼻子；耳朵、脸颊和身体不填充字符。沿用兰紫轮廓、浅白五官和薄荷扫描，保留眨眼、视线、呼吸及负载表情。
+- 合入仓库的自动显卡适配：优先 NVIDIA SMI，不可用时读取 Windows WDDM 的 AMD / Intel / NVIDIA 计数器。GPU MEMORY 分开显示专用显存与共享系统内存；专用显存占用不再触发负载提醒、恢复提示或推迟闲聊，避免核显的小专用内存池造成误报。
+- 最新消息常驻，旧消息保持可读后继续淡出。性能优化、课程名言闲聊和系统事件汇报保留。
+- 动画上限 15 FPS，静态羊驼字符缓存绘制；背景纹理每 3 秒更新、半分辨率绘制。
+- 最新汇报正文顶部自动与 CPU / GPU 首行对齐，适配整套界面缩放。
+- 校园网联动：采集器查找相邻 `AutoConnect` 目录，或当前用户文档中的 `ChatGPT\AutoConnect`，用现有 `status.cmd` 指向的 Python 只读查询认证状态，并读取 `autoconnect.log` 的 `reconnected` 记录。认证断开和恢复可触发英文汇报；不读取 `credentials.json`，不执行登录或断网命令。即使五秒内自动重连，日志也可补上恢复汇报。
+- 物理网卡状态在每次采样时观察；Windows NetworkProfile 日志仍每约 15 秒读取一次。校园网认证状态与网卡链路状态分别记录，避免把网页认证断开误认为网线拔出。
+- 修复高分辨率桌面适配：超过 1080p 时，整套界面随分辨率等比放大；4K 与宽屏不再受 2600px 最大宽度限制而集中在屏幕中央。1080p 及以下保持原布局。
+- 主画面改为从左到右三栏：羊驼、中间英文汇报、右侧系统信息。底部进程排行仍横跨全宽。
+- 本机名称位于整张壁纸左上角，时间与连接状态位于右上角；羊驼状态名和解释短句留在羊驼下方。
+- 羊驼汇报时向右看，朝向中间的消息。
 
-需要 Windows 10/11 和 Wallpaper Engine，显卡通用采集依赖支持相应性能计数器的 WDDM 驱动。
+- 中间以英文汇报真实状态和闲聊。最新消息位于最上方，最大最亮且常驻；最多三条，旧消息在被替换后向下平滑移动、缩小和变暗，70 秒后逐渐淡出、90 秒移除。
+- 高负载需连续观察至少 8 秒：CPU ≥80%、GPU ≥90%、内存 ≥85%、磁盘余量 ≤10%。同类高负载提醒间隔至少 90 秒，正常汇报至少间隔 8 秒。使用较低恢复阈值，避免在边界反复刷屏。
+- Windows 事件按记录编号去重；启动时只建立历史基线，不重播旧日志；只播报一分钟内的新事件。采集器连接、断线和重连也会汇报，不伪装成整机网络中断。
+- 汇报时羊驼短暂向右看；状态标签和原有解释短句保留。中间始终保留最新一条消息，替换后的旧消息在 90 秒内淡出。
+- 连续安静约 3 分钟后开始闲聊，之后每 3–6 分钟随机出现一条。70% 使用 DSA 课件首页的 51 条英文引用，30% 使用羊驼短句；引用显示课件署名，没有署名时不补写作者。最近十条引用暂不重复。
+- 实际事件及高负载汇报优先；机器忙碌、采集断线或刚从采样中断恢复时延后闲聊。引用库随网页加载，无 AI 接口和额外联网请求。提取结果在 output/dsa-quotes，运行 tools/sync_dsa_quotes.py 可将更新后的引用同步到源码；已导入副本仍需同步 reports.js。
+- reports.js 负责汇报、闲聊和消息保留规则。发布前已检查持续负载、冷却、恢复、事件去重、闲聊间隔与消息常驻行为。
 
-1. 克隆仓库或下载解压到可写目录，保留目录结构。
-2. 双击 `Alpaca-Node-v12/Start-Alpaca.cmd`，启动后台采集器。
-3. 打开 <http://127.0.0.1:8765/> 检查预览。
-4. 在 Wallpaper Engine 中导入 `Alpaca-Node-v12/wallpaper/index.html`，保存并应用。
+- 左上角自动显示完整本机主机名（通过 .NET DNS 主机名读取，避免 COMPUTERNAME 环境变量的 15 字符短名称截断），无 Logo 或副标题。
+- 右侧信息栏采用双列，显示 GPU 功耗（W）、风扇驱动报告百分比（不是 RPM），以及固定磁盘可用空间 / 总量。
+- GPU 使用 NVIDIA 驱动的 power.draw、fan.speed 字段。不支持时显示 --；0% 是驱动返回的数值，可能表示风扇停转。
 
-采集器需要和壁纸同时运行。使用 `Stop-Alpaca.cmd` 可停止它；启动失败时检查 `collector-error.log`。安装包不自动设置开机启动，可自行将启动器快捷方式加入当前用户的 Windows 启动文件夹。基础功能不需要 Python，校园网联动是可选功能。
+- 右侧信息栏显示一分钟 CPU 字符趋势、GPU 温度、本次开机流量估计值、最近三条真实系统事件。
+- 趋势按 2 秒一格显示，使用最近一次采样（最多沿用 6 秒），无采样处为点。采集器刚启动时逐渐填充；网页刷新不清空采集器中的历史，采集器重启会重新积累。
+- GPU 温度由 nvidia-smi 的 temperature.gpu 读取，单位 °C。
+- 开机流量标注 ≈：汇总物理网卡累计字节，排除 VPN 等虚拟网卡重复计算。网卡计数通常从初始化起累计，不一定精确等于开机起累计；采集之前发生的重置、驱动保留旧计数等情况无法还原。已观察到的重置会接续累计，并将同一次开机状态保存至 traffic-state.json，Windows 下次启动自动按新会话重新统计。不是从壁纸打开时才开始累计。
+- 系统事件包括 Windows 日志中的开机、睡眠、唤醒与网络事件，另有物理网卡状态和可选的校园网认证状态；显示最近三条。日志约 15 秒检查一次，网卡及校园网状态随采样更新；没有新事件时保持安静。悬停可查看来源和记录编号。未包含 USB 插拔监测。
+- 新增 telemetry-extra.ps1，请与 collector.ps1 放在同一目录。
 
-## 在源码目录直接修改
+- 保留正脸 ASCII 羊驼、状态名及解释短句。底部为 CPU、内存、I/O 三组前四名程序排行；同名进程合并，×N 表示进程数量。
 
-Wallpaper Engine 编辑器导入网页时会创建副本。如果希望直接使用仓库中的源码，可在 Wallpaper Engine 已运行时，通过其官方命令行接口加载本地项目：
+## 启动与导入
 
-```powershell
-& '<Wallpaper Engine 安装目录>\wallpaper32.exe' -control openWallpaper -file '<仓库目录>\Alpaca-Node-v12\wallpaper\project.json'
-```
+1. 双击 Start-Alpaca.cmd，后台启动本地采集程序。核心监控不需要额外安装软件；校园网联动复用现有 `AutoConnect` 项目的 Python。
+2. 浏览器打开 http://127.0.0.1:8765/ 预览。
+3. 在 Wallpaper Engine 编辑器中，把 wallpaper/index.html 拖到「创建壁纸」按钮，保存并应用。编辑器会复制 wallpaper 文件夹中的资源。
+4. 已导入旧版的用户：在编辑器中「编辑 → 在资源管理器中打开」，使用新版 wallpaper 中的文件替换副本，再重新加载壁纸。更新采集程序后，先在旧解压目录运行 Stop-Alpaca.cmd，再在新解压目录运行 Start-Alpaca.cmd。旧采集器未停止时，新启动器会复用占用 8765 的现有采集器。
 
-修改后重新加载壁纸即可。也可在 Wallpaper Engine 的 `projects/myprojects` 中创建指向源码 `wallpaper` 目录的 Windows Junction，以保留壁纸库入口。移动仓库后，需要更新应用路径、目录链接和启动快捷方式。
+也可以将 wallpaper 文件夹整体复制到 Wallpaper Engine 的 projects/myprojects/alpaca-node 目录。
+
+采集程序始终从解压后的原目录启动，不必放到 Wallpaper Engine 目录。双击 Stop-Alpaca.cmd 可停止本目录启动的后台进程。启动失败时查看 collector-error.log。
+
+解压包不会自动设置开机启动。需要时可将启动脚本的快捷方式放入启动文件夹（Win+R → shell:startup）；迁移目录后应重建快捷方式。在本机先前已设置的快捷方式仍指向原源码目录，解压这个包不会自动改变它。
+
+## 换电脑使用与后台运行
+
+- 当前后台采集器依赖 Windows 的 PowerShell、WMI/CIM 和事件日志。macOS/Linux 需要另行实现采集器。
+- 基础监控及内置名言不需要 Python、Codex 或原始课程 PDF；只有可选的校园网联动需要 AutoConnect 对应的 Python 环境。
+- GPU 自动选择采集方式：优先 NVIDIA 的 nvidia-smi；不可用时使用 Windows WDDM 性能计数器，支持 AMD / Intel / NVIDIA。本机名称、内存、磁盘和进程会自动读取新电脑；需将 telemetry-gpu.ps1、gpu-adapters.cs 与 collector.ps1 放在同一目录。
+- 解压到可写目录，保留运行文件之间的相对位置。端口 8765 必须可用；修改采集端口时也要修改 Launch-Alpaca.ps1 和 wallpaper/app.js 中的接口地址。
+- 发布包不包含旧压缩包、课程 PDF、日志、collector.pid、traffic-state.json 或本机启动快捷方式；包含 GPU 模块与 tools/test-gpu.ps1 逻辑检查。release-manifest.json 仅在实际打包时生成，本次源码合并不重新打包。
+- 采集进程启动后常驻，收到 /metrics 请求时才采集。轮换到别的壁纸且没有预览页请求时，它主要等待连接，内存仍保留。打开的浏览器预览页也会请求采样。
+
+## 数据口径
+
+- CPU：Windows 性能计数器的整机使用率。
+- 内存：物理内存已用比例，容量以 GiB 显示。
+- GPU：有可用的 NVIDIA SMI 利用率时显示第一张 NVIDIA 显卡。否则读取 DXGI 返回的第一张 AMD / Intel / NVIDIA 硬件显卡，排除软件和远程显示设备。Windows 路径按 LUID 匹配计数器，同一物理引擎各进程相加，再取最忙引擎，不将并行引擎或不同显卡相加。显卡清单每分钟刷新；这是单张显卡读数，并非多卡合计或按活动显卡自动切换。
+- GPU MEMORY：百分比及 DEDICATED 只表示专用显存占用；SHARED 单独表示共享系统内存已用 / Windows 共享上限。共享上限不是预先分配的显存；核显的专用池接近满额也不代表全部可用 GPU 内存耗尽。不是显存带宽利用率。
+- Windows WDDM 路径可显示 GPU 利用率、专用显存和共享内存。温度、功耗和风扇没有通用 Windows 数据源，此路径显示 --；NVIDIA 路径保留驱动支持的传感器。缺失计数器显示 --，真实空闲显示 0。不安装驱动或第三方监控软件。
+- 网络：活动网卡累计收发字节的采样差值，排除环回及 Tunnel 类型。第一条采样用于建立基线；虚拟网卡可能导致重复计入。
+- 磁盘：所有物理磁盘的读写速率。
+- 进程 CPU：Windows 进程计数器使用率除以逻辑处理器数量后，同名合并；100% 表示整机算力。各类计数器采样窗口不同，进程排行之和不保证与整机 CPU 同步相等。
+- 进程内存：私有工作集，同名合并；不会重复累计共享页。不是提交内存或进程虚拟地址空间。
+- 进程 I/O：读和写速率之和，包含文件、网络、设备等 I/O，不等同于物理磁盘吞吐量。
+- 同名分组不等同于按进程树识别软件，名称相同的程序会合并。只显示名称和统计值，不采集命令行、文件路径、窗口标题。
+- 每次完成采集后约 2 秒请求下一次；后台计数器调用本身也会耗时。无连接时清除数值和排行。
+
+## 动效
+
+正面半身羊驼采用 420 × 560 的字符轮廓，脸颊、耳朵和胸部内部留白；静态轮廓与口鼻缓存，眼睛单独更新。CPU 低于 25% 为 GRAZING，25–79% 为 WATCHFUL，80% 及以上为 BUSY。具有眨眼、轻微视线移动、扫描线和呼吸动画。背景字符为装饰纹理。
+
+Canvas 上限 15 FPS，遵循 Wallpaper Engine 的帧率和暂停事件。羊驼的静态字符缓存后只更新眼睛和扫描线；背景纹理每 3 秒更新一次，并以半分辨率绘制。Wallpaper Engine 属性可关闭羊驼动画或背景纹理；关闭背景后会释放其大画布缓冲。
+
+## 本地接口
+
+只绑定 127.0.0.1:8765；提供只读 /metrics 和固定的网页资源，不提供命令执行和任意文件读取。允许本地预览来源以及网页壁纸使用的文件 / opaque origin，拒绝带其他网页 Origin 的请求。其他本机应用及部分 opaque-origin 页面仍可能读取接口，接口不是身份认证边界。无外部字体和云端数据上传。
+
+PowerShell 的 ExecutionPolicy Bypass 只作用于当前脚本进程，不修改系统执行策略。
 
 ## 修改入口
 
-| 文件（位于 `Alpaca-Node-v12`） | 用途 |
-| --- | --- |
-| `wallpaper/index.html` | 页面结构 |
-| `wallpaper/style.css` | 布局和样式 |
-| `wallpaper/app.js` | 数值显示和羊驼动画 |
-| `wallpaper/reports.js` | 状态汇报、格言和闲聊规则 |
-| `collector.ps1` | Windows 数据采集和本地 HTTP 服务 |
-| `telemetry-gpu.ps1` / `gpu-adapters.cs` | 跨厂商 GPU 采集和显卡映射 |
-| `telemetry-extra.ps1` | 系统事件与开机流量估计 |
+- wallpaper/index.html：信息结构
+- wallpaper/style.css：布局和样式
+- wallpaper/app.js：数值显示、排行和羊驼动画
+- collector.ps1：Windows 采样与本机 HTTP 服务
+- telemetry-gpu.ps1 / gpu-adapters.cs：跨厂商 GPU 采集与硬件映射
 
-## 数据口径与限制
-
-- Windows GPU 路径将同一物理引擎的进程利用率相加，再取最忙引擎；不会将并行引擎或不同显卡混算。
-- 专用显存百分比只针对专用内存；共享内存上限不是已经分配的显存。核显的专用显存接近满额不代表全部 GPU 可用内存耗尽。
-- Windows 通用路径不提供温度、功耗和风扇数据，这些字段显示 `--`。NVIDIA 路径保留驱动支持的传感器。
-- 本机已实测 AMD Radeon 780M；其他厂商的硬件支持取决于驱动，未逐一实机验证。
-- 服务只监听 `127.0.0.1:8765`，端口需保持可用。接口不是身份认证边界，同一电脑上的其他程序可能读取监控数据。
-- 运行日志、进程编号、流量状态、本机设置和旧版备份均由 `.gitignore` 排除。
-
-更多细节见 [完整说明](Alpaca-Node-v12/README.md)。GPU 逻辑检查可运行：
+## 开发与检查
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Alpaca-Node-v12\tools\test-gpu.ps1
+node --check wallpaper/app.js
+node --check wallpaper/reports.js
+node test-reports.cjs
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\test-campus-events.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\test-gpu.ps1
 ```
+
+GPU 检查覆盖引擎聚合、显卡隔离、未知与真实零值，以及 NVIDIA / Windows 回退。通用 GPU 路径还取决于各设备驱动提供的计数器。`tools/package_release.py` 使用显式文件清单构建发布包，避免将本机状态和备份混入；只在需要发布时指定新版本号运行。

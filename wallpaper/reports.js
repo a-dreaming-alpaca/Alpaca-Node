@@ -20,7 +20,7 @@
   // Latest message remains visible; old messages retire for 90s after replacement.
   function historyLayout(history,now){
     return history.filter((report,index)=>index===0||now-(report.retiredAt??report.born)<90000)
-      .map((report,index)=>({report,scale:[1,.87,.75][index],opacity:index===0?1:[1,.45,.18][index]*Math.min(1,Math.max(0,(90000-(now-(report.retiredAt??report.born)))/20000))}));
+      .map((report,index)=>({report,scale:[1,.87,.75][index],opacity:index===0?1:[1,.72,.38][index]*Math.min(1,Math.max(0,(90000-(now-(report.retiredAt??report.born)))/20000))}));
   }
   // Pure decision logic; timestamps are supplied by the caller for deterministic checks.
   class AlpacaReports {

@@ -1,7 +1,6 @@
-# Keep packaged bytes (including Windows line endings/BOM) stable so the
-# SHA-256 values in release-manifest.json remain valid after clone/checkout.
-Alpaca-Node-v12/** -text whitespace=cr-at-eol
-
+# Preserve existing source bytes, including Windows script BOMs and line endings.
+# Release manifests are computed from the same bytes after clone or checkout.
+* -text whitespace=cr-at-eol
 /.gitignore text eol=lf
 /.gitattributes text eol=lf
 /README.md text eol=lf

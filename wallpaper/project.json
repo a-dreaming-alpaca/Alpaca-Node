@@ -1,0 +1,13 @@
+{
+  "title": "ALPACA NODE — Local Intelligence",
+  "description": "Mint-led graphite monitor with a lavender outline ASCII alpaca. Automatic NVIDIA SMI or AMD/Intel/NVIDIA WDDM telemetry, dedicated and shared GPU memory, process rankings and idle quotations. Run Start-Alpaca.cmd first.",
+  "type": "web",
+  "file": "index.html",
+  "general": {
+    "properties": {
+      "schemecolor": { "text": "Theme", "type": "color", "value": "0.61 0.91 0.76" },
+      "ambient": { "text": "Background character texture", "type": "bool", "value": true },
+      "motion": { "text": "Alpaca animation", "type": "bool", "value": true }
+    }
+  }
+}

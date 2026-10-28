@@ -1,14 +1,23 @@
-# Machine-local setup, previous installed copies and archives
-/LOCAL_SETUP.md
-/backups/
-*.zip
-
-# Runtime telemetry and process state
-*.log
+# Runtime telemetry and machine-local setup
 collector.pid
 traffic-state.json
+*.log
+/LOCAL_SETUP.md
+/.dsa-quotes-source
 
-# Python/editor caches
+# Previous versions, temporary renders and local backups
+/backups/
+/tmp/
+*.zip
+*.zip.sha256
+/preview*.png
+/preview*.jpg
+/alpaca-outline/*.png
+/output/dsa-quotes/first-pages.txt
+/output/dsa-quotes/summary.json
+/output/dsa-quotes/errors.json
+
+# Python and editor caches
 __pycache__/
 *.py[cod]
 .DS_Store
