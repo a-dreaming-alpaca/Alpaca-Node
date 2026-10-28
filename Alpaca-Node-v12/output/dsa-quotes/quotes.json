@@ -1,0 +1,614 @@
+[
+  {
+    "quote": "Computer science should be called computing science, for the same reason why surgery is not called knife science.",
+    "author": "E. Dijkstra",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.A.Compu+Algor.pdf",
+        "page": 1,
+        "author_as_printed": "E. Dijkstra"
+      }
+    ]
+  },
+  {
+    "quote": "Sometimes it is the people no one can imagine anything of who do the things no one can imagine.",
+    "author": "A. Turing",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.B1.Model.TM.pdf",
+        "page": 1,
+        "author_as_printed": "A. Turing"
+      }
+    ]
+  },
+  {
+    "quote": "To measure is to know. If you can not measure it, you can not improve it.",
+    "author": "Lord Kelvin",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.B1.Model.TM.pdf",
+        "page": 1,
+        "author_as_printed": "Lord Kelvin"
+      }
+    ]
+  },
+  {
+    "quote": "Mathematics is more in need of good notations than of new theorems.",
+    "author": "A. Turing",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.C1.Asymp.Big_o.pdf",
+        "page": 1,
+        "author_as_printed": "A. Turing"
+      }
+    ]
+  },
+  {
+    "quote": "Any time you are stuck on a problem, introduce more notation.",
+    "author": "Chris Skinner",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.C1.Asymp.Big_o.pdf",
+        "page": 1,
+        "author_as_printed": "Chris Skinner"
+      }
+    ]
+  },
+  {
+    "quote": "Computational problems can be feasibly computed on some computational device only if they can be computed in polynomial time.",
+    "author": "A. Cobham & J. Edmonds",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.C2.Asymp.Poly+Tractable.pdf",
+        "page": 1,
+        "author_as_printed": "A. Cobham & J. Edmonds"
+      }
+    ]
+  },
+  {
+    "quote": "He calculated just as men breathe, as eagles sustain themselves in the air.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.D1.Analysis.BOE.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Go To Statement Considered Harmful.",
+    "author": "E. Dijkstra, 1968",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.D2.Analysis.Series.pdf",
+        "page": 1,
+        "author_as_printed": "E. Dijkstra, 1968"
+      }
+    ]
+  },
+  {
+    "quote": "A good graphic is a microscope to see patterns in numbers.",
+    "author": "Edward Tufte",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.D3.Analysis.Vis.pdf",
+        "page": 1,
+        "author_as_printed": "Edward Tufte"
+      }
+    ]
+  },
+  {
+    "quote": "All knowledge begins with sensory experience, and especially with sight.",
+    "author": "Leonardo. da Vinci",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.D3.Analysis.Vis.pdf",
+        "page": 1,
+        "author_as_printed": "Leonardo. da Vinci"
+      }
+    ]
+  },
+  {
+    "quote": "Repetitive diligence is just another form of laziness.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.F1.DP.fib.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Make it work, make it right, make it fast.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "01.算法概论\\01.intro.F2.DP.lcs.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "A scientist discovers that which exists, an engineer creates that which never was.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "02.向量\\02.Vector.B1.insert+remove.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Outward failure may be a manifested variant of inward success.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "02.向量\\02.Vector.C4.binSearch_C.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Those too big to pass through are our friends.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "02.向量\\02.Vector.F2.Bitmap.app.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Don't lose the link.",
+    "author": "Robin Milner",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "03.列表\\03.List.A1.call-by-posi.pdf",
+        "page": 1,
+        "author_as_printed": "Robin Milner"
+      }
+    ]
+  },
+  {
+    "quote": "Yessiree. We do not doubt his word, an stack ourselfs into the bus like flapjacks.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "04.栈与队列\\04.S+Q.B1.call_stack.principle+storage.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "A hero is born among a hundred, a wise man is found among a thousand, but an accomplished one might not be found even among a hundred thousand men.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "04.栈与队列\\04.S+Q.K.MaxStack+MaxQueue.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Anyone who loves his father or mother more than me is not worthy of me; anyone who loves his son or daughter more than me is not worthy of me.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "05.二叉树\\05.Binary_Tree.B2.BinTree.Impl.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Two roads diverged in a yellow wood And sorry I could not travel both",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "05.二叉树\\05.Binary_Tree.B2.BinTree.Impl.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Although we've come to the end of the road Still I can't let you go",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "05.二叉树\\05.Binary_Tree.C3.Traverse.Inorder.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "No two leaves are exactly alike.",
+    "author": "Leibniz",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "05.二叉树\\05.Binary_Tree.C4.Traverse.Succ.pdf",
+        "page": 1,
+        "author_as_printed": "Leibniz"
+      }
+    ]
+  },
+  {
+    "quote": "No matter where they take us, We'll find our own way back.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "05.二叉树\\05.Binary_Tree.C7.Traverse.Rebuild.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "There's nothing in your head the sorting hat can't see. So try me on and I will tell you where you ought to be.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "06.二叉搜索树\\06.BST.A1.Seach.call-by-key.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Good order is the foundation of all good things.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "06.二叉搜索树\\06.BST.A2.Search.inorder.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "The maxim \"Nothing avails but perfection\" may be spelt shorter: \"Paralysis.\"",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "06.二叉搜索树\\06.BST.D1.AVL.Asymp_Balance.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Your instinct, rather than precision stabbing, is more about just random bludgeoning.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "07.搜索树应用\\07.BSTA.A.Int_Tree.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "When we stand on the tops of Things And like the Trees, look down The smoke all cleared away from it And Mirrors on the scene Just laying light",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "08.高级搜索树\\08.ABST.A1.Splay.Splay1.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "640K ought to be enough for anybody.",
+    "author": "B. Gates, 1981",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "08.高级搜索树\\08.ABST.B1.B-Tree.Hierarchy.pdf",
+        "page": 1,
+        "author_as_printed": "B. Gates, 1981"
+      }
+    ]
+  },
+  {
+    "quote": "We are shaped by our thoughts; we become what we think.",
+    "author": "Buddha",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "09.词典\\09.Dict.A1.hashing.Call-by-Object.pdf",
+        "page": 1,
+        "author_as_printed": "Buddha"
+      }
+    ]
+  },
+  {
+    "quote": "Man's thought is shaped by his tongue.",
+    "author": "Anonymous",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "09.词典\\09.Dict.A1.hashing.Call-by-Object.pdf",
+        "page": 1,
+        "author_as_printed": "Anonymous"
+      }
+    ]
+  },
+  {
+    "quote": "Every mistake I've ever made Has been rehashed and then replayed As I got lost along the way.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "09.词典\\09.Dict.C4.Solve_Collision.Insert+Rehash.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Don't put all your eggs in one basket.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "09.词典\\09.Dict.D1.Bucketsort+MaxGap.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "God made the integers; all else is the work of man.",
+    "author": "L. Kronecker",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "09.词典\\09.Dict.D2.Radixsort+IntSort.pdf",
+        "page": 1,
+        "author_as_printed": "L. Kronecker"
+      }
+    ]
+  },
+  {
+    "quote": "The purpose of computing is insight, not numbers.",
+    "author": "Hamming",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "09.词典\\09.Dict.D3.countingsort.pdf",
+        "page": 1,
+        "author_as_printed": "Hamming"
+      }
+    ]
+  },
+  {
+    "quote": "Keep it simple, stupid.",
+    "author": "K. Johnson",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "10.图基础\\10.Graph.D.DFS.pdf",
+        "page": 1,
+        "author_as_printed": "K. Johnson"
+      }
+    ]
+  },
+  {
+    "quote": "And as we walk, we must make the pledge that we shall always march ahead. We cannot turn back.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "10.图基础\\10.Graph.E.TS.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Begin with the end in mind.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "10.图基础\\10.Graph.E.TS.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "The hurricane seeks the shortest road by the no-road, and suddenly ends its search in the nowhere.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "11.图进阶\\11.Graph.B2.Dijk.SP.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "I cannot choose the best. The best chooses me.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "12.优先级队列\\12.PQ.A.motivation+ADT.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "I have scaled the peak and found no shelter in fame's bleak and barren height",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "12.优先级队列\\12.Pq.B3.CBH.delmax.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "We are the champions. No time for losers 'Cause we are the champions of the world",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "12.优先级队列\\12.PQ.C2.Tournament.Loser_Tree.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "God's right hand is gentle But terrible is his left hand",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "12.优先级队列\\12.PQ.E1.LH.meld+vine.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "The farther backward you can look, the farther forward you can see.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "13.串\\13.String.B2.Kmp.lookup-table.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "I have learned more from my failures ... failures are much more fun to hear about afterwards; they are not so funny at the time.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "13.串\\13.String.C3.BM_BC.Construct_BC.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Wrong cannot afford defeat, but Right can.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "13.串\\13.String.D2.Bm_GS.Construct_GS.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "Every entity is like a living mirror, containing an image of the universe, in its own way.",
+    "author": "Leibniz",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "13.串\\13.String.E1.KR.Strings_are_number.pdf",
+        "page": 1,
+        "author_as_printed": "Leibniz"
+      }
+    ]
+  },
+  {
+    "quote": "All things are number.",
+    "author": "Pythagoras",
+    "attribution": "printed_on_slide",
+    "sources": [
+      {
+        "file": "13.串\\13.String.E1.KR.Strings_are_number.pdf",
+        "page": 1,
+        "author_as_printed": "Pythagoras"
+      }
+    ]
+  },
+  {
+    "quote": "God kisses the finite in his love and man the infinite.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "13.串\\13.String.E3.KR.bit_width.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "The Great walks with the Small without fear. The Middle keeps aloof.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "14.排序\\14.Sorting.A7.Quicksort.LGU.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  },
+  {
+    "quote": "They are like the leaves which a tempest whirls up and scatters in every direction and then allows to fall.",
+    "author": "",
+    "attribution": "not_printed",
+    "sources": [
+      {
+        "file": "14.排序\\14.Sorting.C3.Shellsort.More_sequences.pdf",
+        "page": 1,
+        "author_as_printed": ""
+      }
+    ]
+  }
+]

@@ -1,0 +1,89 @@
+{
+  "release": "Alpaca-Node-v12.1-auto-gpu",
+  "files": {
+    "README.md": {
+      "bytes": 11698,
+      "sha256": "c04470f598ac025fcb88343ed6974de2f9a72d0c1f8eafeeb68a638140ca9924"
+    },
+    "Start-Alpaca.cmd": {
+      "bytes": 127,
+      "sha256": "a1aa240ff86c65038d11d47021b0943109772bb1fb682cdd95045fafdd394bb0"
+    },
+    "Launch-Alpaca.ps1": {
+      "bytes": 1353,
+      "sha256": "9ae48d603aa63d61f7c19bfa54e130e4348aec9bd43f1be023070eff5217db0b"
+    },
+    "Stop-Alpaca.cmd": {
+      "bytes": 103,
+      "sha256": "30fd0a766876f6a9651ed41fd30648240ffa0e42761f5d7ebfd5bd852259435f"
+    },
+    "Stop-Alpaca.ps1": {
+      "bytes": 531,
+      "sha256": "d454f8fa2dd3d168aaefaecab42d340c3591cb0d58127216b34c2fe475849160"
+    },
+    "collector.ps1": {
+      "bytes": 9232,
+      "sha256": "d292ade80477fa4e2dee53de446f445fd6496659371287ce1c1eff851c8b8b96"
+    },
+    "telemetry-extra.ps1": {
+      "bytes": 9780,
+      "sha256": "8d131e7703f015c11507b8fa9b1b42e639096a7fdd8357bd9f811e5f87e94c8e"
+    },
+    "campus-status.py": {
+      "bytes": 677,
+      "sha256": "53c4496b422880a3ceb4137d6e0894fd322882bfccfbf93a18a4f68d4f4eb671"
+    },
+    "wallpaper/index.html": {
+      "bytes": 4893,
+      "sha256": "3eced011584c46b8fb4c717092caf8dadcd7ca40d59cde2d7805b9c2e6f4641c"
+    },
+    "wallpaper/style.css": {
+      "bytes": 13623,
+      "sha256": "d38eb4e2a1d6448823a0106e3a781934dd0302ad0ff0a3211d9596b375b2623f"
+    },
+    "wallpaper/app.js": {
+      "bytes": 20834,
+      "sha256": "5d95a44a5aabd14b6f943ac18586e67c8755f52ef801629c49c61255dbbc4349"
+    },
+    "wallpaper/reports.js": {
+      "bytes": 15264,
+      "sha256": "e7f88a7ee7a5b9df45de7ccb270029151c058165589181b4ac8590516e28614c"
+    },
+    "wallpaper/project.json": {
+      "bytes": 682,
+      "sha256": "e26985ce7c047cd7e5111da71c4ff18caa570b00d24df962169ef5dc775d9d92"
+    },
+    "output/dsa-quotes/quotes.json": {
+      "bytes": 16590,
+      "sha256": "fe33166370902083363c5bf2943260977ed133d1c50ef94817588febd758efec"
+    },
+    "output/dsa-quotes/quotes.md": {
+      "bytes": 9383,
+      "sha256": "c993646053c0dc10531798e5d9bd315bcc787cf337de52846062ee42e4ebaec0"
+    },
+    "output/dsa-quotes/quotes.csv": {
+      "bytes": 7474,
+      "sha256": "7b0b8aee2302ed8c8b3f2243bf3e0b3a9c601e964eb777ab45e69e3d9e4b25c6"
+    },
+    "output/dsa-quotes/review.json": {
+      "bytes": 743,
+      "sha256": "3fa2d505b9b1895b9562cf0ec26fd6b12fdcf0123449a2c8e1ed633536b5f2eb"
+    },
+    "tools/sync_dsa_quotes.py": {
+      "bytes": 859,
+      "sha256": "5cd11cd4c2da9fbeaab668fdf5557bfb184b12e6b64db073118a9beccb501341"
+    },
+    "telemetry-gpu.ps1": {
+      "bytes": 4968,
+      "sha256": "2bb6d00ad5d083e798de9e30c9f7bada0372436a69b2b785f74a0139d3b98ad0"
+    },
+    "gpu-adapters.cs": {
+      "bytes": 3407,
+      "sha256": "ffbfcb3484357ca4d8777fde6cc8ffeea7734c8cbe72aeb90b2bc7412bdf2eba"
+    },
+    "tools/test-gpu.ps1": {
+      "bytes": 2090,
+      "sha256": "224ae90678ec1d35b1465738b55a67b810f9365377c2a9a8e7d51c5a21d1fc06"
+    }
+  }
+}

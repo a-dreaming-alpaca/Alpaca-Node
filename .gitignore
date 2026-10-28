@@ -1,0 +1,15 @@
+# Machine-local setup, previous installed copies and archives
+/LOCAL_SETUP.md
+/backups/
+*.zip
+
+# Runtime telemetry and process state
+*.log
+collector.pid
+traffic-state.json
+
+# Python/editor caches
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db

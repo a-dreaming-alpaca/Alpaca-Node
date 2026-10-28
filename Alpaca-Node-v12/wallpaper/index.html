@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALPACA / Local intelligence</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<canvas id="ambient" aria-hidden="true"></canvas><div class="scanlines" aria-hidden="true"></div>
+<main>
+  <header class="wallpaper-header">
+    <h1 id="device-name">LOCAL HOST</h1>
+    <div class="subject-info">
+      <div class="clock"><time id="clock">00:00:00</time><span id="date">LOCAL TIME</span></div>
+      <div class="connection"><span class="status-dot" id="status-dot"></span><span id="connection">AWAITING TELEMETRY</span></div>
+    </div>
+  </header>
+  <section class="workspace">
+    <section class="subject">
+      <div class="entity-wrap"><canvas id="alpaca" aria-label="ASCII 羊驼，状态随电脑负载变化"></canvas></div>
+      <div class="entity-label"><div id="entity-state">DORMANT</div><p id="entity-caption">waiting for a heartbeat</p></div>
+    </section>
+    <section class="report-column" aria-label="Alpaca voice reports">
+      <div class="report-stream" id="report-stream" role="log" aria-live="polite" aria-label="Alpaca reports"></div>
+    </section>
+    <aside class="telemetry">
+      <div class="telemetry-grid">
+        <section class="readout">
+          <div class="stat-row"><span class="stat-name">CPU</span><strong><span id="cpu">--</span><small>%</small></strong></div>
+          <div class="stat-note" id="core-count">-- LOGICAL PROCESSORS</div>
+          <div class="cpu-trend"><span>60s</span><span id="cpu-trend" aria-label="最近一分钟 CPU 趋势">······························</span></div>
+        </section>
+        <section class="readout">
+          <div class="stat-row"><span class="stat-name">GPU</span><strong><span id="gpu">--</span><small>%</small></strong></div>
+          <div class="stat-note" id="gpu-name">WAITING FOR GPU</div>
+          <div class="gpu-details"><span id="gpu-temp">-- °C</span><span id="gpu-power">-- W</span><span>FAN <b id="gpu-fan">--%</b></span></div>
+        </section>
+        <section class="readout">
+          <div class="stat-row"><span class="stat-name">MEMORY</span><strong><span id="memory">--</span><small>%</small></strong></div>
+          <div class="stat-note" id="memory-detail">-- / -- GiB</div>
+        </section>
+        <section class="readout">
+          <div class="stat-row"><span class="stat-name">GPU MEMORY</span><strong><span id="vram">--</span><small>%</small></strong></div>
+          <div class="stat-note" id="vram-detail">DEDICATED -- / -- GiB</div>
+          <div class="stat-note" id="gpu-shared" hidden></div>
+        </section>
+        <section class="readout">
+          <h2 class="metric-heading">NETWORK</h2>
+          <div class="detail-row"><span>↓ DOWN</span><span id="download">-- KB/s</span></div>
+          <div class="detail-row"><span>↑ UP</span><span id="upload">-- KB/s</span></div>
+          <div class="traffic-heading" title="本次开机物理网卡累计估计值；采集前的计数重置无法还原。">BOOT TRAFFIC ≈</div>
+          <div class="detail-row"><span>↓</span><span id="boot-rx">--</span></div>
+          <div class="detail-row"><span>↑</span><span id="boot-tx">--</span></div>
+        </section>
+        <section class="readout">
+          <h2 class="metric-heading">STORAGE</h2>
+          <div class="detail-row"><span>READ</span><span id="disk-read">-- KB/s</span></div>
+          <div class="detail-row"><span>WRITE</span><span id="disk-write">-- KB/s</span></div>
+          <div class="traffic-heading">FREE / TOTAL</div>
+          <div id="volumes">Waiting for drives…</div>
+        </section>
+      </div>
+      <div class="session-info"><span>UPTIME</span><span id="uptime">--d --h --m</span><span>UPDATED</span><span id="sample-time">--:--:--</span></div>
+      <section class="system-events"><h3>SYSTEM EVENTS</h3><ol id="system-events"><li class="empty">Waiting for system events…</li></ol></section>
+    </aside>
+  </section>
+  <section class="process-panel" aria-label="占用最高的程序">
+    <div class="rankings">
+      <section class="ranking"><h3><span>CPU / TOP 04</span><small>% OF TOTAL CPU</small></h3><ol id="top-cpu"><li class="empty">Waiting for collector…</li></ol></section>
+      <section class="ranking"><h3><span>MEMORY / TOP 04</span><small>PRIVATE WORKING SET</small></h3><ol id="top-memory"><li class="empty">Waiting for collector…</li></ol></section>
+      <section class="ranking"><h3><span>I/O / TOP 04</span><small>READ + WRITE / ALL I/O</small></h3><ol id="top-io"><li class="empty">Waiting for collector…</li></ol></section>
+    </div>
+  </section>
+</main><script src="reports.js"></script><script src="app.js"></script>
+</body></html>
