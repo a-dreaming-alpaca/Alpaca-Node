@@ -13,7 +13,11 @@
     muted:themeColor('--muted','#A0A6B0'),
     warning:themeColor('--warning','#FF9388')
   };
+  const memory = new window.AlpacaMemory();
+  let memoryEnabled=true,suspendedCore=null;
   const reporter = new window.AlpacaReports();
+  const savedMemory=memory.read();
+  const restoredCore=savedMemory&&reporter.restore(savedMemory.core,Date.now());
   const reports=[];
   let speakingUntil=0;
   // Keep the 1080p composition readable on high-resolution Wallpaper Engine desktops.
@@ -50,20 +54,35 @@
   window.addEventListener('resize',alignReports);
   document.fonts.ready.then(alignReports);
   alignReports();
-  function addReports(items){
+  function remember(){
+    if(memoryEnabled)memory.save({core:suspendedCore||reporter.snapshot(Date.now()),latest:reports[0]?.item||null});
+  }
+  function suspendReports(){
+    if(!suspendedCore)suspendedCore=reporter.snapshot(Date.now());
+    remember();
+  }
+  function resumeReports(){
+    if(suspendedCore){reporter.restore(suspendedCore,Date.now());suspendedCore=null;}
+  }
+  function addReports(items,{restored=false}={}){
     if(!items.length)return;
     for(const item of items){
       if(reports.length && reports[0].retiredAt===null)reports[0].retiredAt=Date.now();
       const el=document.createElement('article');el.className='spoken-report';
       el.dataset.kind=item.kind;
-      const time=document.createElement('time');time.textContent=clockText(new Date(item.time));
+      const date=new Date(item.time),time=document.createElement('time');
+      const sameDay=date.toDateString()===new Date().toDateString();
+      time.textContent=(sameDay?'':date.toLocaleDateString('en-CA')+' ')+clockText(date);
+      if(restored)time.title='Saved report · '+date.toLocaleString();
       const text=document.createElement('p');text.textContent=item.kind==='quote'?`“${item.text}”`:item.text;el.append(time,text);
       if(item.author){const author=document.createElement('div');author.className='report-author';author.textContent='— '+item.author;el.append(author);}
       if(item.source)el.title='DSA course slide: '+item.source;
-      $('report-stream').prepend(el);reports.unshift({el,born:Date.now(),retiredAt:null});speakingUntil=Date.now()+8000;
+      $('report-stream').prepend(el);reports.unshift({el,item:{...item},born:Date.now(),retiredAt:null});
+      if(!restored)speakingUntil=Date.now()+8000;
     }
     while(reports.length>3)reports.pop().el.remove();
     layoutReports();
+    if(!restored)remember();
   }
   function layoutReports(){
     let y=0;
@@ -190,16 +209,17 @@
   async function poll() {
     clearTimeout(pollTimer);
     if (polling) return;
-    if (model.paused) { pollTimer = setTimeout(poll, 2000); return; }
+    if (model.paused||suspendedCore) { pollTimer = setTimeout(poll, 2000); return; }
     polling = true;
     const abort = new AbortController(); const timeout = setTimeout(() => abort.abort(), 12000);
     try {
       const response = await fetch(endpoint, { cache: 'no-store', signal: abort.signal });
       if (!response.ok) throw new Error('Collector unavailable');
       const data = await response.json();
+      if(model.paused||suspendedCore)return;
       if (!Number.isFinite(data.cpu) || !Number.isFinite(data.memory?.percent) || !Array.isArray(data.cores)) throw new Error('Invalid sample');
       update(data);
-    } catch (_) { onlineState(false); }
+    } catch (_) { if(!model.paused&&!suspendedCore)onlineState(false); }
     finally { polling = false; clearTimeout(timeout); pollTimer = setTimeout(poll, 2000); }
   }
   function canvasSize(canvas, quality = 1) {
@@ -328,12 +348,41 @@
   }
   let lastFrame=0; function animate(t){requestAnimationFrame(animate);if(model.paused||t-lastFrame<1000/model.fps)return;lastFrame=t;drawAlpaca(t);drawAmbient(t);}
   window.wallpaperPropertyListener = {
-    applyUserProperties(properties) { if(properties.ambient)model.ambient=properties.ambient.value;if(properties.motion)model.motion=properties.motion.value; },
+    applyUserProperties(properties) {
+      if(properties.ambient)model.ambient=properties.ambient.value;
+      if(properties.motion)model.motion=properties.motion.value;
+      if(properties.memory&&typeof properties.memory.value==='boolean'){
+        memoryEnabled=properties.memory.value;
+        if(!memoryEnabled)memory.clear();
+      }
+      const settings={};
+      if(properties.personality)settings.personality=properties.personality.value;
+      if(properties.quotes)settings.quotesEnabled=properties.quotes.value;
+      if(properties.smalltalk)settings.smallTalkEnabled=properties.smalltalk.value;
+      if(Object.keys(settings).length){
+        if(suspendedCore)reporter.restore(suspendedCore,Date.now());
+        reporter.configure(settings,Date.now());
+        if(suspendedCore)suspendedCore=reporter.snapshot(Date.now());
+      }
+      remember();
+    },
     applyGeneralProperties(properties) { if(properties.fps)model.fps=Math.max(1,Math.min(15,properties.fps)); },
-    setPaused(paused) { model.paused=paused; if(!paused)poll(); }
+    setPaused(paused) {
+      if(paused&&!model.paused)suspendReports();
+      if(!paused&&model.paused)resumeReports();
+      model.paused=paused;
+      if(!paused)poll();
+    }
   };
 
   function tick(){const now=new Date();$('clock').textContent=clockText(now);$('date').textContent=now.toLocaleDateString('en-CA');}
-  addReports([{text:"I'm here. Waiting for a telemetry heartbeat.",kind:'link',time:Date.now()}]);
+  if(restoredCore&&savedMemory.latest)addReports([savedMemory.latest],{restored:true});
+  else addReports([{text:"I'm here. Waiting for a telemetry heartbeat.",kind:'link',time:Date.now()}]);
+  // Save small behavioural records, never CPU/GPU readings. Lifecycle flushes
+  // freeze the remaining idle wait while Wallpaper Engine pauses or unloads us.
+  setInterval(()=>{if(!model.paused)remember();},5000);
+  window.addEventListener('pagehide',suspendReports);
+  window.addEventListener('pageshow',event=>{if(event.persisted){resumeReports();if(!model.paused)poll();}});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)remember();});
   tick();setInterval(tick,1000);onlineState(false);poll();requestAnimationFrame(animate);
 })();

@@ -7,7 +7,18 @@
     "properties": {
       "schemecolor": { "text": "Theme", "type": "color", "value": "0.61 0.91 0.76" },
       "ambient": { "text": "Background character texture", "type": "bool", "value": true },
-      "motion": { "text": "Alpaca animation", "type": "bool", "value": true }
+      "motion": { "text": "Alpaca animation", "type": "bool", "value": true },
+      "personality": {
+        "text": "羊驼性格", "type": "combo", "value": "standard", "index": 2, "order": 102,
+        "options": [
+          { "label": "安静 · 8–12 分钟", "value": "quiet" },
+          { "label": "标准 · 3–6 分钟", "value": "standard" },
+          { "label": "健谈 · 1–3 分钟", "value": "chatty" }
+        ]
+      },
+      "quotes": { "text": "格言警句", "type": "bool", "value": true, "index": 3, "order": 103 },
+      "smalltalk": { "text": "羊驼短句", "type": "bool", "value": true, "index": 4, "order": 104 },
+      "memory": { "text": "记住状态（关闭会清除记忆）", "type": "bool", "value": true, "index": 5, "order": 105 }
     }
   }
 }

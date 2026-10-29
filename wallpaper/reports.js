@@ -22,14 +22,81 @@
     return history.filter((report,index)=>index===0||now-(report.retiredAt??report.born)<90000)
       .map((report,index)=>({report,scale:[1,.87,.75][index],opacity:index===0?1:[1,.72,.38][index]*Math.min(1,Math.max(0,(90000-(now-(report.retiredAt??report.born)))/20000))}));
   }
+  const PERSONALITIES={
+    quiet:{wait:360000,min:480000,range:240000},
+    standard:{wait:180000,min:180000,range:180000},
+    chatty:{wait:60000,min:60000,range:120000}
+  };
+  const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
+  const validSettings=value=>value && typeof value==='object' && !Array.isArray(value)
+    && owns(PERSONALITIES,value.personality)
+    && typeof value.quotesEnabled==='boolean' && typeof value.smallTalkEnabled==='boolean';
+  const timestamp=value=>Number.isFinite(value)&&value>=0;
+  const cooldownKey=value=>typeof value==='string' && /^(cpu|gpu|memory|disk:[^\x00-\x1f]{1,64})$/.test(value);
   // Pure decision logic; timestamps are supplied by the caller for deterministic checks.
   class AlpacaReports {
-    constructor({quotes=DSA_QUOTES,random=Math.random}={}){this.connected=false;this.everConnected=false;this.seen=new Set();this.alerts=new Map();this.queue=[];this.lastSent=-Infinity;this.lastSample=0;this.random=random;this.quotes=quotes;this.recentQuotes=[];this.recentTalk=[];this.nextChatterAt=Infinity;}
+    constructor({quotes=DSA_QUOTES,random=Math.random}={}){
+      this.connected=false;this.everConnected=false;this.seen=new Set();this.alerts=new Map();this.queue=[];
+      this.lastSent=-Infinity;this.lastSample=0;this.random=random;this.quotes=quotes;
+      this.recentQuotes=[];this.recentTalk=[];this.nextChatterAt=Infinity;this.resumePending=false;
+      this.settings={personality:'standard',quotesEnabled:true,smallTalkEnabled:true};
+    }
     static historyLayout(history,now){return historyLayout(history,now);}
-    postponeChatter(now){this.nextChatterAt=now+180000;}
+    canChatter(){return (this.settings.quotesEnabled&&this.quotes.length>0)||this.settings.smallTalkEnabled;}
+    postponeChatter(now){this.nextChatterAt=this.canChatter()?now+PERSONALITIES[this.settings.personality].wait:Infinity;}
+    configure(options,now){
+      if(!options || typeof options!=='object' || Array.isArray(options) || !timestamp(now))return false;
+      const next={...this.settings};
+      if(owns(PERSONALITIES,options.personality))next.personality=options.personality;
+      for(const key of ['quotesEnabled','smallTalkEnabled'])if(typeof options[key]==='boolean')next[key]=options[key];
+      if(Object.keys(next).every(key=>next[key]===this.settings[key]))return false;
+      const previousEnabled=this.canChatter(),profileChanged=next.personality!==this.settings.personality;
+      this.settings=next;
+      if(!this.canChatter())this.nextChatterAt=Infinity;
+      else if((this.connected||this.resumePending)&&(profileChanged||!previousEnabled||!Number.isFinite(this.nextChatterAt)))this.postponeChatter(now);
+      return true;
+    }
+    snapshot(now){
+      const cooldowns=[];
+      for(const [key,state] of this.alerts){
+        if(cooldownKey(key)&&timestamp(state.last)&&now-state.last<90000)cooldowns.push({key,last:Math.min(now,state.last)});
+      }
+      return {version:1,settings:{...this.settings},everConnected:this.everConnected,wasConnected:this.connected||this.resumePending,
+        chatterRemainingMs:Number.isFinite(this.nextChatterAt)?Math.min(720000,Math.max(0,this.nextChatterAt-now)):null,
+        recentQuotes:this.recentQuotes.slice(-10),recentTalk:this.recentTalk.slice(-5),cooldowns:cooldowns.slice(-32),
+        lastSentAt:timestamp(this.lastSent)&&now-this.lastSent<8000?Math.min(now,this.lastSent):null};
+    }
+    restore(saved,now){
+      if(!saved||typeof saved!=='object'||Array.isArray(saved)||saved.version!==1||!timestamp(now)||!validSettings(saved.settings))return false;
+      if(typeof saved.everConnected!=='boolean'||typeof saved.wasConnected!=='boolean'||(saved.wasConnected&&!saved.everConnected))return false;
+      if(saved.chatterRemainingMs!==null&&(!Number.isFinite(saved.chatterRemainingMs)||saved.chatterRemainingMs<0||saved.chatterRemainingMs>720000))return false;
+      if(saved.lastSentAt!==null&&!timestamp(saved.lastSentAt))return false;
+      const strings=(items,max)=>Array.isArray(items)&&items.length<=max&&items.every(text=>typeof text==='string'&&text.length<=8192);
+      if(!strings(saved.recentQuotes,10)||!strings(saved.recentTalk,5)||!Array.isArray(saved.cooldowns)||saved.cooldowns.length>32)return false;
+      if(!saved.cooldowns.every(item=>item&&typeof item==='object'&&cooldownKey(item.key)&&timestamp(item.last)))return false;
+      this.settings={personality:saved.settings.personality,quotesEnabled:saved.settings.quotesEnabled,smallTalkEnabled:saved.settings.smallTalkEnabled};this.connected=false;this.everConnected=saved.everConnected;this.resumePending=saved.wasConnected;
+      this.lastSample=0;this.seen=new Set();this.queue=[];this.alerts=new Map();
+      // Persist only completed alert cooldowns, never evidence of continuous load or a recovery to announce.
+      for(const item of saved.cooldowns){
+        const last=Math.min(now,item.last);
+        if(now-last<90000)this.alerts.set(item.key,{since:null,sent:false,last});
+      }
+      const knownQuotes=new Set(this.quotes.map(item=>item.quote));
+      this.recentQuotes=saved.recentQuotes.filter(text=>knownQuotes.has(text));
+      this.recentTalk=saved.recentTalk.filter(text=>SMALL_TALK.includes(text));
+      this.nextChatterAt=this.canChatter()&&saved.chatterRemainingMs!==null?now+saved.chatterRemainingMs:Infinity;
+      this.lastSent=saved.lastSentAt===null?-Infinity:Math.min(now,saved.lastSentAt);
+      return true;
+    }
+    resetEvidence(){
+      for(const state of this.alerts.values()){state.since=null;state.sent=false;}
+      this.queue=this.queue.filter(item=>item.kind==='event');
+    }
     chatter(now){
+      if(!this.canChatter())return [];
       let report;
-      if(this.quotes.length && this.random()<.7){
+      const canQuote=this.settings.quotesEnabled&&this.quotes.length>0;
+      if(canQuote&&(!this.settings.smallTalkEnabled||this.random()<.7)){
         const available=this.quotes.filter(q=>!this.recentQuotes.includes(q.quote));
         const quote=(available.length?available:this.quotes)[Math.floor(this.random()*(available.length||this.quotes.length))];
         this.recentQuotes.push(quote.quote);this.recentQuotes=this.recentQuotes.slice(-10);
@@ -40,22 +107,28 @@
         this.recentTalk.push(text);this.recentTalk=this.recentTalk.slice(-5);
         report={text,kind:'chatter',time:now};
       }
-      this.nextChatterAt=now+180000+Math.floor(this.random()*180000);
+      const profile=PERSONALITIES[this.settings.personality];
+      this.nextChatterAt=now+profile.min+Math.floor(this.random()*profile.range);
       this.lastSent=now;
       return [report];
     }
     connection(online,now){
       if(online===this.connected)return [];
       this.connected=online;
-      if(!online){this.alerts.clear();this.queue=[];this.lastSample=0;this.nextChatterAt=Infinity;return [{text:"I've lost my telemetry link. I can't see current readings.",kind:'link',time:now}];}
+      if(!online){this.resetEvidence();this.queue=[];this.lastSample=0;this.nextChatterAt=Infinity;this.resumePending=false;return [{text:"I've lost my telemetry link. I can't see current readings.",kind:'link',time:now}];}
+      if(this.resumePending){
+        this.resumePending=false;
+        if(this.canChatter()&&!Number.isFinite(this.nextChatterAt))this.postponeChatter(now);
+        return [];
+      }
       const text=this.everConnected?"I'm connected again. I can see your machine now.":"I'm connected. I'll keep an eye on your machine.";
       this.everConnected=true;this.lastSent=now;this.postponeChatter(now);return [{text,kind:'link',time:now}];
     }
     sample(data,now){
       const sampleAt=Date.parse(data.timestamp);
       if(!Number.isFinite(sampleAt)||sampleAt===this.lastSample)return [];
-      const gap=this.lastSample && sampleAt-this.lastSample>10000;
-      if(gap){this.alerts.clear();this.postponeChatter(now);}
+      const gap=this.lastSample && (sampleAt-this.lastSample>10000||sampleAt<this.lastSample);
+      if(gap){this.resetEvidence();this.postponeChatter(now);}
       const initial=!this.lastSample;this.lastSample=sampleAt;
       const items=data.events?.items||[];
       for(const event of [...items].reverse()){
@@ -77,7 +150,7 @@
       const eligible=[];
       for(const [key,value,high,low,message] of rules){
         let state=this.alerts.get(key);
-        if(!Number.isFinite(value)){this.alerts.delete(key);continue;}
+        if(!Number.isFinite(value)){if(state){state.since=null;state.sent=false;}continue;}
         if(!state){state={since:null,sent:false,last:-Infinity};this.alerts.set(key,state);}
         if(value>=high){
           this.queue=this.queue.filter(q=>q.key!==key);

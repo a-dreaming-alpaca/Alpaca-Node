@@ -11,7 +11,7 @@ FILES = [
     "Stop-Alpaca.cmd", "Stop-Alpaca.ps1", "collector.ps1",
     "telemetry-extra.ps1", "telemetry-gpu.ps1", "gpu-adapters.cs", "campus-status.py",
     "wallpaper/index.html", "wallpaper/style.css", "wallpaper/app.js",
-    "wallpaper/reports.js", "wallpaper/project.json",
+    "wallpaper/reports.js", "wallpaper/memory.js", "wallpaper/project.json",
     "output/dsa-quotes/quotes.json", "output/dsa-quotes/quotes.md",
     "output/dsa-quotes/quotes.csv", "output/dsa-quotes/review.json",
     "tools/sync_dsa_quotes.py", "tools/test-gpu.ps1",
@@ -39,7 +39,7 @@ def build(version: int) -> Path:
             data = archive.read(f"{prefix}/{name}")
             assert hashlib.sha256(data).hexdigest() == details["sha256"], name
         html = archive.read(f"{prefix}/wallpaper/index.html").decode("utf-8")
-        for asset in ("style.css", "reports.js", "app.js"):
+        for asset in ("style.css", "reports.js", "memory.js", "app.js"):
             assert asset in html and f"{prefix}/wallpaper/{asset}" in archive.namelist(), asset
     digest = hashlib.sha256(target.read_bytes()).hexdigest()
     target.with_suffix(".zip.sha256").write_text(f"{digest}  {target.name}\n", encoding="ascii")

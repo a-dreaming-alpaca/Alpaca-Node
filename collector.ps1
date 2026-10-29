@@ -104,6 +104,7 @@ function Get-Telemetry {
 $utf8 = [System.Text.UTF8Encoding]::new($false)
 $files = @{ '/' = @('index.html', 'text/html; charset=utf-8'); '/index.html' = @('index.html', 'text/html; charset=utf-8'); '/style.css' = @('style.css', 'text/css; charset=utf-8'); '/app.js' = @('app.js', 'text/javascript; charset=utf-8') }
 $files['/reports.js'] = @('reports.js', 'text/javascript; charset=utf-8')
+$files['/memory.js'] = @('memory.js', 'text/javascript; charset=utf-8')
 Write-Host "ALPACA NODE is listening at http://127.0.0.1:$Port (Ctrl+C to stop)."
 try {
     while ($true) {
